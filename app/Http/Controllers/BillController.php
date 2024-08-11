@@ -11,8 +11,8 @@ class BillController extends Controller
 {
     public function index()
     {
-        $bills = new BillCollection(Bill::all());
-        // $bills = Bill::all();
+        // $bills = new BillCollection(Bill::all());
+        $bills = Bill::all()->load(['payments']);
         return response()->json($bills, 200);
     }
 
