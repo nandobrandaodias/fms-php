@@ -9,7 +9,7 @@ class Bill extends Model
 {
     protected $fillable = [
         'cost', 'client_id', 'billing_id', 'reference_month',
-        'expiration_date', 'is_open'
+        'expiration_date', 'is_open', 'created_at'
     ];
 
     public $timestamps = false;

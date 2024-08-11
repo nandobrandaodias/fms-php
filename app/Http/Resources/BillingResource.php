@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Bill;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,7 +23,9 @@ class BillingResource extends JsonResource
             'reference_month' => $this->reference_month,
             'created_at' => $this->created_at,
             'is_approved' => $this->is_approved,
-            'bills' => BillResource::collection($this->bills)
+            'bills' => $this->when($this->bills,
+                Bill::all()->where('billing_id', $this->id)
+            )
         ];
     }
 }

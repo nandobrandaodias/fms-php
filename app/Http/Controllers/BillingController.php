@@ -45,13 +45,51 @@ class BillingController extends Controller
 
     public function show(Request $request, Billing $billing)
     {
-        $billing = new BillingResource(Bill::findOrFail($billing));
+        $billing = new BillingResource($billing);
         return response()->json($billing, 200);
     }
 
     public function update(Request $request, Billing $billing)
-    { 
-        //
+    {
+        $request->validate([
+            'bills' => 'required'
+        ]);
+
+        DB::transaction(function() use ($billing, $request){
+            $billing->update([
+                'name' => $request->name,
+                'deploy_date' => $request->deploy_date,
+                'end_contract_date' => $request->end_contract_date,
+                'expiration_bill_date' => $request->expiration_bill_date,
+                'bill_value' => $request->bill_value
+            ]);
+               
+            $bills = Bill::find($request->bills);
+            $existentBills = Bill::all()->where('billing_id', $billing->id);
+
+            if($existentBills){
+                foreach($existentBills as $existentBill){
+                    $deleteBill = true;
+                    foreach($bills as $bill){
+                        if($bill == $existentBill) $deleteBill = false;
+                    }
+
+                    if($deleteBill){
+                        $existentBill->billing_id = null;
+                        $existentBill->is_open = true;
+                        $existentBill->save();
+                    }
+                }
+            }
+
+            foreach($bills as $bill){
+                if($bill->billing_id || $bill->is_open){
+                    $bill->billing_id = $billing->id;
+                    $bill->is_open = false;
+                    $bill->save();
+                }    
+            }
+        });
     }
 
     public function destroy(Billing $billing)
