@@ -23,7 +23,7 @@ Route::group(['prefix' => 'system'], function(){
 Route::group(['prefix' => 'client'], function(){
     Route::get('/', [ClientController::class, 'index']);
     Route::get('/show/{client}', [ClientController::class, 'show']);
-    Route::post('/addSystemToClient', [ClientController::class, 'addSystemToClient']);
+    Route::post('/updateSystemsToClient/{client}', [ClientController::class, 'updateSystemsToClient']);
     Route::post('/store', [ClientController::class, 'store']);
     Route::patch('/update/{client}', [ClientController::class, 'update']);
     Route::delete('/delete/{client}', [ClientController::class, 'destroy']);

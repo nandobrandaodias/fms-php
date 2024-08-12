@@ -49,7 +49,6 @@ class SystemController extends Controller
     public function destroy(Request $request, System $system)
     {
         $system->delete();
-
         return response('',200);
     }
 }

@@ -61,12 +61,34 @@ class ClientController extends Controller
         return response('',200);
     }
 
-    public function addSystemToClient(Request $request){
-        DB::transaction(function () use ($request){
-            $client = Client::find($request->client_id);
-            $system = System::find($request->system_id);
-            $client->system()->attach($system);
-        });
+    public function updateSystemsToClient(Request $request, Client $client){
+        DB::transaction(function () use ($request, $client){
+            $existentSystems = $client->system()->get();
+            if(count($existentSystems)){
+                foreach($existentSystems as $existentSystem){
+                    $deleteSystem = true;
+                    foreach($request->systems as $system){
+                        if($existentSystem->id == $system) $deleteSystem = false;
+                    }
+
+                    if($deleteSystem){
+                        $client->system()->detach($existentSystem);
+                    }
+                }
+            }
+
+            foreach($request->systems as $system){
+                $createBill = true;
+                if(count($existentSystems)){
+                    foreach($existentSystems as $existent){
+                        if($existent->id == $system) $createBill = false;
+                    }
+                }
+
+                if($createBill) $client->system()->attach($system);
+            }
+
+        }); 
 
         return response('', 200);
     }

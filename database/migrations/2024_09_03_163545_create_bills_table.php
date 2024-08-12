@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->references('id')->on('clients')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('client_id')->references('id')->on('clients');
             $table->foreignId('billing_id')->nullable()->references('id')->on('billings');
             $table->float('cost');
             $table->boolean('is_open');

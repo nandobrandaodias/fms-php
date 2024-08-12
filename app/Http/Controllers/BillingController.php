@@ -83,7 +83,7 @@ class BillingController extends Controller
             }
 
             foreach($bills as $bill){
-                if($bill->billing_id || $bill->is_open){
+                if($bill->billing_id != $billing->id || $bill->is_open){
                     $bill->billing_id = $billing->id;
                     $bill->is_open = false;
                     $bill->save();
@@ -94,7 +94,15 @@ class BillingController extends Controller
 
     public function destroy(Billing $billing)
     {
-        $billing->delete();
+        DB::transaction(function() use ($billing){
+            $existentBills = Bill::all()->where('billing_id', $billing->id);
+            foreach($existentBills as $existentBill){
+                $existentBill->billing_id = null;
+                $existentBill->is_open = true;
+                $existentBill->save();
+            }
+            $billing->delete();
+        });
         return response('', 200);
     }
 
